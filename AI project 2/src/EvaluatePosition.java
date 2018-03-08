@@ -3,11 +3,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class EvaluatePosition {
+    private final static int POSITIONNUMBER = 16;
     private Evaluate evaluate = new Evaluate();
     public List<Status> evaluatePosition(int[][] board, int m, int color){
         //找出所有两格距离内有邻居的节点
         //Find all nodes that have neighbors within 2 steps.
-        List<Status> positionList = new ArrayList<Status>();
+        List<Status> positionList = new ArrayList<>();
         //遍历所有点
         for(int i = 0 ; i < board.length ; i++) {
             for(int j = 0 ; j < board.length ; j++) {
@@ -23,7 +24,7 @@ public class EvaluatePosition {
                         return positionList;
                     }
                     //如果没有出现输赢，则对该下法进行评分然后放入ArrayList中
-                    Status p = new Status(i,j,evaluate.evaluateGame(board, m));
+                    Status p = new Status(i,j,evaluate.evaluatePosition(board,i,j,m));
                     positionList.add(p);
                     //清空该点棋子
                     board[i][j] = 0;
@@ -32,6 +33,12 @@ public class EvaluatePosition {
         }
         //遍历结束，按分数对点进行排序
         Collections.sort(positionList);
+        if(color == -1) {
+            Collections.reverse(positionList);
+        }
+        if(positionList.size()>POSITIONNUMBER) {
+            positionList = positionList.subList(0, POSITIONNUMBER);
+        }
         return positionList;
     }
 
