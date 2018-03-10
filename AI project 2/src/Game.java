@@ -26,28 +26,51 @@ public class Game {
 //begin a new game.
 	public void game() {
 		Status move = new Status(0,0,0);
+		move.column = boardSize/2;
+		move.row = boardSize/2;
+		board[move.row][move.column] = BLACK;
+		String param = "x="+String.valueOf(move.row+1)+"&&"+"y="+String.valueOf(move.column+1);
+		String url = "http://localhost:3000/post?"+ param;
+		Get.get(url);
+		System.out.println("( " + move.row + " , " + move.column + " )");
 		int turn = 0;
-		int color = BLACK;
+		int color = WHITE;
 		//second player is white, set color to WHITE
 		//if turn number bigger than 8, end the game.
 		while(Win.haveAWin(board, m) == 0 && turn<(boardSize*boardSize-1)) {
-			//human input
-			color = BLACK;
-			String[] hunmanMive = input(color);
-			String param = "x="+String.valueOf(Integer.valueOf(hunmanMive[0])+1)+"&&"+"y="+String.valueOf(Integer.valueOf(hunmanMive[1])+1);
-			String url = "http://localhost:3000/post?"+ param;
-			Get.get(url);
-			//call nextStep to get best next move position.t
-			color = WHITE;
-			move = nextStep(color, 0,Integer.MIN_VALUE);
+//			//human input
+//			color = BLACK;
+//			String[] hunmanMive = input(color);
+//			String param = "x="+String.valueOf(Integer.valueOf(hunmanMive[0])+1)+"&&"+"y="+String.valueOf(Integer.valueOf(hunmanMive[1])+1);
+//			String url = "http://localhost:3000/post?"+ param;
+//			Get.get(url);
+//			//call nextStep to get best next move position.t
+//			color = WHITE;
+//			move = nextStep(color, 0,Integer.MIN_VALUE);
+//
+//			board[move.row][move.column] = color;
+//			turn++;
+//			System.out.println("( " + move.row + " , " + move.column + " )");
+//			//System.out.println(Win.haveAWin(board, m));
+//			param = "x="+String.valueOf(move.row+1)+"&&"+"y="+String.valueOf(move.column+1);
+//			url = "http://localhost:3000/post?"+ param;
+//			Get.get(url);
+			//call nextStep to get best next move position.
+			if(color == WHITE){
+				move = nextStep(color, 0,Integer.MIN_VALUE);
+			}else{
+				move = nextStep(color, 0,Integer.MAX_VALUE);
+			}
 
 			board[move.row][move.column] = color;
 			turn++;
-			System.out.println("( " + move.row + " , " + move.column + " )");
-			//System.out.println(Win.haveAWin(board, m));
 			param = "x="+String.valueOf(move.row+1)+"&&"+"y="+String.valueOf(move.column+1);
 			url = "http://localhost:3000/post?"+ param;
 			Get.get(url);
+			//switch player
+			color = 0-color;
+			System.out.println("( " + move.row + " , " + move.column + " )");
+			//System.out.println(Win.haveAWin(board, m));
 		}
 		//clean the game board
 		for(int i = 0; i<boardSize ; i++) {
@@ -73,6 +96,7 @@ public class Game {
 	//Calculate the best next move position
 	//this is a recursive method.
 	private Status nextStep(int color, int depth,int alphaBeta) {
+
 
 		//store two status, bestMove and bestNextMove
 		//in Black player's turn we need to find the max value
@@ -105,9 +129,9 @@ public class Game {
 			bestMove.point = evaluate.evaluateGame(board, m);
 			return bestMove;
 		}
-		//用启发式搜索获得所有可以下棋的点
+		//heuristic search give an order
 		List<Status> positionList = evaluatePosition.evaluatePosition(board, m, color);
-		//For each 循环来逐个评估得分
+		//For each evaluate
 		for(Status p : positionList) {
 			int row = p.row;
 			int column = p.column;
@@ -117,14 +141,14 @@ public class Game {
 			//recursively call the method to get its score from next board status.
 			bestNextMove = nextStep(nextColor, depth+1,nextLevelAlphaBeta);
 			if(color == BLACK) {
-				//Alpha Beta 剪枝
+				//Alpha Beta cut
 				if(bestNextMove.point>=alphaBeta){
 					board[row][column] = 0;
 					bestNextMove.row = row;
 					bestNextMove.column = column;
 					return bestNextMove;
 				}
-				//如果找到了更好的落棋点就替换原来的
+				//replace
 				if(bestMove.point <= bestNextMove.point) {
 					//set point and position.
 					bestMove.point = bestNextMove.point;
@@ -135,14 +159,14 @@ public class Game {
 				}
 			}
 			if(color == WHITE) {
-				//Alpha Beta 剪枝
+				//Alpha Beta cut
 				if(bestNextMove.point<=alphaBeta) {
 					board[row][column] = 0;
 					bestNextMove.row = row;
 					bestNextMove.column = column;
 					return bestNextMove;
 				}
-				//如果找到了更好的落棋点就替换原来的
+				//replace
 				if(bestMove.point >= bestNextMove.point) {
 					//set point and position.
 					bestMove.point = bestNextMove.point;

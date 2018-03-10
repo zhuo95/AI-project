@@ -4,6 +4,7 @@ import java.util.List;
 
 public class EvaluatePosition {
     private final static int POSITIONNUMBER = 16;
+
     private Evaluate evaluate = new Evaluate();
     public List<Status> evaluatePosition(int[][] board, int m, int color){
         //找出所有两格距离内有邻居的节点
@@ -24,7 +25,7 @@ public class EvaluatePosition {
                         return positionList;
                     }
                     //如果没有出现输赢，则对该下法进行评分然后放入ArrayList中
-                    Status p = new Status(i,j,evaluate.evaluatePosition(board,i,j,m));
+                    Status p = new Status(i,j,evaluate.evaluateGame(board,m));
                     positionList.add(p);
                     //清空该点棋子
                     board[i][j] = 0;
