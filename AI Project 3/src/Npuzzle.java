@@ -298,8 +298,9 @@ public class Npuzzle {
         int[][] board2 = {{13,7,4,10},{14,0,8,9},{6,12,11,2},{5,3,1,15}};
         //test for 5*5
         int[][] board3 = {{2,7,3,4,5},{1,19,8,9,10},{23,16,21,20,22},{18,6,13,11,15},{12,0,14,17,24}};
+        int[][] board4 = {{5,1,14,2},{13,10,6,0},{15,9,3,11},{8,4,7,12}};
 
-        Npuzzle test = new Npuzzle(board);
+        Npuzzle test = new Npuzzle(board3);
         test.search();
     }
 
